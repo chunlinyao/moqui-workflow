@@ -85,7 +85,7 @@
                         </default-field>
                     </field>
                     <field name="inputUserFullName">
-                        <default-field title="流程发起人">
+                        <default-field title="流程定义人">
                             <display/>
                         </default-field>
                     </field>
