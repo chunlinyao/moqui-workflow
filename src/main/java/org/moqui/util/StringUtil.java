@@ -50,7 +50,7 @@ public class StringUtil {
      * @return {@code true} if the query is properly formatted and {@code false} otherwise
      */
     public static boolean isValidElasticsearchQuery(String query) {
-        if(query==null) {
+        if(query == null || query.isEmpty()) {
             return false;
         }
         try {

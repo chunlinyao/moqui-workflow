@@ -24,11 +24,13 @@ repositories {
 dependencies {
     compile(
             project(':framework'),
-            project(':runtime:component:moqui-elasticsearch'),
             // Apache Commons
             'org.apache.commons:commons-lang3:3.8',
             // JSON
-            'org.json:json:20180813'
+            'org.json:json:20180813',
+            // https://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser
+            group: 'org.apache.lucene', name: 'lucene-queryparser', version: '8.5.0'
+
     )
     testCompile(
             project(':framework').configurations.testCompile.allDependencies
@@ -52,7 +54,6 @@ task copyDependencies {
         copy {
             from (configurations.runtime
                     - project(':framework').configurations.runtime
-                    - project(':runtime:component:moqui-elasticsearch').configurations.runtime
                     - project(':runtime:component:moqui-workflow').jar.archivePath
             )
             into file(libDir)
