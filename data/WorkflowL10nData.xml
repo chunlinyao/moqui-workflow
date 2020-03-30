@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This software is in the public domain under CC0 1.0 Universal plus a 
+Grant of Patent License.
+
+To the extent possible under law, the author(s) have dedicated all
+copyright and related and neighboring rights to this software to the
+public domain worldwide. This software is distributed without any
+warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication
+along with this software (see the LICENSE.md file). If not, see
+<http://creativecommons.org/publicdomain/zero/1.0/>.
+-->
+<entity-facade-xml type="seed">
+    <moqui.basic.LocalizedMessage original="ENTITY_FIELD_NOT_FOUND" locale="zh" localized="未找到实体字段"/>
+
+    <moqui.basic.LocalizedMessage original="WORKFLOW_NOT_FOUND" locale="zh" localized="未找到工作流定义"/>
+    <moqui.basic.LocalizedMessage original="WORKFLOW_DISABLED" locale="zh" localized="工作流定义已失效"/>
+
+    <moqui.basic.LocalizedMessage original="WORKFLOW_INSTANCE_NOT_FOUND" locale="zh" localized="未找到工作流实例"/>
+    <moqui.basic.LocalizedMessage original="WORKFLOW_INSTANCE_NOT_OPERABLE" locale="zh" localized="工作流实例未处于可操作状态"/>
+    <moqui.basic.LocalizedMessage original="WORKFLOW_INSTANCE_NO_ENTRY_ACTIVITY" locale="zh" localized="工作流实例没有入口活动节点"/>
+    <moqui.basic.LocalizedMessage original="WORKFLOW_INSTANCE_RESUMED_SUCCESSFULLY" locale="zh" localized="成功恢复工作流实例"/>
+    <moqui.basic.LocalizedMessage original="WORKFLOW_INSTANCE_ABORTED_SUCCESSFULLY" locale="zh" localized="成功中止工作流实例"/>
+
+    <moqui.basic.LocalizedMessage original="Workflow" locale="zh" localized="工作流管理"/>
+    <moqui.basic.LocalizedMessage original="Instances" locale="zh" localized="工作流实例管理"/>
+    <moqui.basic.LocalizedMessage original="Find Instance" locale="zh" localized="工作流实例列表"/>
+
+    <!-- Workflow activity type -->
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_ACTIVITY_ENTER" locale="zh" localized="开始"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_ACTIVITY_EXIT" locale="zh" localized="结束"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_ACTIVITY_CONDITION" locale="zh" localized="条件网关"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_ACTIVITY_USER" locale="zh" localized="人工审核"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_ACTIVITY_ADJUST" locale="zh" localized="状态变迁"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_ACTIVITY_SERVICE" locale="zh" localized="服务调用"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_ACTIVITY_NOTIFY" locale="zh" localized="消息通知"/>
+
+    <!-- Workflow instance status -->
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_INST_STAT_PEND" locale="zh" localized="待处理"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_INST_STAT_ACTIVE" locale="zh" localized="处理中"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_INST_STAT_COMPLETE" locale="zh" localized="已完成"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_INST_STAT_ABORT" locale="zh" localized="中止"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_INST_STAT_SUSPEND" locale="zh" localized="暂停"/>
+
+    <!-- Workflow event type -->
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_EVENT_START" locale="zh" localized="开始"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_EVENT_FINISH" locale="zh" localized="结束"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_EVENT_SUSPEND" locale="zh" localized="暂停"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_EVENT_RESUME" locale="zh" localized="恢复"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_EVENT_ACTIVITY" locale="zh" localized="活动处理"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_EVENT_TRANSITION" locale="zh" localized="跳转下一步"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_EVENT_REMINDER" locale="zh" localized="提醒"/>
+</entity-facade-xml>

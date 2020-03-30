@@ -2,7 +2,7 @@
 <!--                                                                 -->
 <!-- NOTE: This file provides demo workflow setup, you can delete it -->
 <!--                                                                 -->
-<entity-facade-xml type="seed">
+<entity-facade-xml type="demo">
 
     <!-- Foo status -->
     <moqui.basic.StatusType statusTypeId="FooStatus" description="Foo Status"/>
