@@ -46,6 +46,11 @@
                 </id>
             </resource>
         </resource>
+        <resource name="service">
+            <method type="get">
+                <service name="org.moqui.basic.BasicServices.find#Service"/>
+            </method>
+        </resource>
     </resource>
 
     <resource name="entity" description="Entity API" version="1.0.0" require-authentication="anonymous-all">

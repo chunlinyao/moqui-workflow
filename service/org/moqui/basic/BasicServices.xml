@@ -71,5 +71,34 @@
             </parameter>
         </out-parameters>
     </service>
+    <service verb="find" noun="Service">
+        <in-parameters>
+            <parameter name="filter" />
+            <parameter name="pageIndex" type="Integer"/>
+            <parameter name="pageSize" type="Integer"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="totalRows" type="Long"/>
+            <parameter name="serviceNameList" type="List">
+                <parameter name="serviceName" type="String" />
+            </parameter>
+        </out-parameters>
+        <actions>
+            <set field="knownServiceNames" from="ec.service.knownServiceNames"/>
+            <set field="filteredServiceNames" from="new ArrayList(knownServiceNames)"/>
+            <script>
+                if (filter) {
+                Iterator theIterator = filteredServiceNames.iterator()
+                while (theIterator.hasNext()) {
+                String curSn = (String) theIterator.next()
+                if (!curSn.contains(filter)) theIterator.remove()
+                }
+                }
+                paginateList("filteredServiceNames", null, context)
+            </script>
+            <set field="totalRows" from="knownServiceNames.size()" />
+            <set field="serviceNameList" from="filteredServiceNames" />
+        </actions>
+    </service>
 
 </services>
