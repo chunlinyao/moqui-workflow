@@ -19,5 +19,6 @@ package org.moqui.workflow.util;
 public enum WorkflowCrowdType {
     WF_CROWD_USER_GROUP,
     WF_CROWD_USER,
-    WF_CROWD_INITIATOR
+    WF_CROWD_INITIATOR,
+    WF_CROWD_SERVICE
 }

@@ -50,6 +50,7 @@
     <moqui.basic.Enumeration description="User" enumId="WF_CROWD_USER" enumTypeId="WorkflowCrowdType"/>
     <moqui.basic.Enumeration description="User Group" enumId="WF_CROWD_USER_GROUP" enumTypeId="WorkflowCrowdType"/>
     <moqui.basic.Enumeration description="Initiator" enumId="WF_CROWD_INITIATOR" enumTypeId="WorkflowCrowdType"/>
+    <moqui.basic.Enumeration description="Service" enumId="WF_CROWD_SERVICE" enumTypeId="WorkflowCrowdType"/>
 
     <!-- Workflow notification type -->
     <moqui.basic.EnumerationType description="Workflow Notification Type" enumTypeId="WorkflowNotificationType"/>

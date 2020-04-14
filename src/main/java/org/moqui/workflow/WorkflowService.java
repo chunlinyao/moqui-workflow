@@ -13,6 +13,7 @@
  */
 package org.moqui.workflow;
 
+import org.moqui.service.*;
 import org.moqui.util.ContextUtil;
 import org.moqui.util.StringUtil;
 import org.moqui.util.TimeFrequency;
@@ -28,7 +29,6 @@ import org.moqui.context.L10nFacade;
 import org.moqui.context.MessageFacade;
 import org.moqui.context.UserFacade;
 import org.moqui.entity.*;
-import org.moqui.service.ServiceFacade;
 import org.moqui.util.*;
 import org.moqui.workflow.activity.*;
 import org.moqui.workflow.util.*;
@@ -43,6 +43,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.*;
 
 /**
  * Service to manage workflows and execute workflow instances.
@@ -1709,6 +1710,9 @@ public class WorkflowService {
                             long minApprovals = crowd.has("minApprovals") ? crowd.getLong("minApprovals") : 0;
                             long minRejections = crowd.has("minRejections") ? crowd.getLong("minRejections") : 0;
 
+                            String serviceName = crowd.has("serviceName") ? crowd.getString("serviceName") : null;
+                            String parameters = crowd.has("serviceParameters") ? crowd.getString("serviceParameters") : null;
+
                             // get user ID set
                             Set<String> userIdSet = new HashSet<>();
                             if (crowdType == WorkflowCrowdType.WF_CROWD_USER && StringUtils.isNotBlank(userId)) {
@@ -1730,6 +1734,36 @@ public class WorkflowService {
                                     if (userAccount != null) {
                                         userIdSet.add(userAccount.getString("userId"));
                                     }
+                                }
+                            } else if (crowdType == WorkflowCrowdType.WF_CROWD_SERVICE && StringUtils.isNotBlank(serviceName)) {
+                                logger.debug(String.format("[%s] Executing service: %s", logId, serviceName));
+                                try {
+                                    ServiceCallSync serviceCall = sf.sync().name(serviceName)
+                                            .parameter("instance", instance.cloneValue())
+                                            .parameter("serviceParameters", parameters);
+                                    Map<String, Object> response = serviceCall.call();
+                                    logger.debug(String.format("[%s] Service executed successfully", logId));
+                                    logger.debug(String.format("[%s] Got response: %s", logId, response.toString()));
+                                    if (response.containsKey("userAccounts")) {
+                                        @SuppressWarnings("unchecked")
+                                        Collection<? extends EntityValue> userAccounts = (Collection<? extends EntityValue>) response.get("userAccounts");
+                                        userIdSet.addAll( userAccounts
+                                                .stream().map(ua -> ua.getString("userId")).collect(Collectors.toList()));
+                                    }
+                                } catch (ServiceException e) {
+                                    stopWatch.stop();
+                                    logger.error(String.format("[%s] An error occurred while running service: %s", logId, e.getMessage()), e);
+                                    String errorMessage = String
+                                            .format("Failed to execute %s activity (%s) due to error: %s", currentActivity.getString("activityTypeDescription"), currentActivityId, e.getMessage());
+                                    WorkflowUtil.createWorkflowEvent(
+                                            ec,
+                                            instanceId,
+                                            WorkflowEventType.WF_EVENT_ACTIVITY,
+                                            errorMessage,
+                                            true
+                                    );
+                                    mf.addError(errorMessage);
+                                    return new HashMap<>();
                                 }
                             } else if (crowdType == WorkflowCrowdType.WF_CROWD_INITIATOR) {
                                 EntityValue userAccount = ef.find("moqui.security.UserAccount")
