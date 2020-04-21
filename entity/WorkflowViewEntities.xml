@@ -29,6 +29,7 @@
         <alias name="primaryEntityName" entity-alias="workflowType" field="primaryEntityName"/>
         <alias name="primaryViewEntityName" entity-alias="workflowType" field="primaryViewEntityName"/>
         <alias name="primaryKeyField" entity-alias="workflowType" field="primaryKeyField"/>
+        <alias name="detailTransitionUrl" entity-alias="workflowType" field="detailTransitionUrl"/>
         <alias name="statusFlowId" entity-alias="statusFlow" field="statusFlowId"/>
         <alias name="statusFlowDescription" entity-alias="statusFlow" field="description"/>
         <alias name="launchTypeDescription" entity-alias="launchType" field="description"/>
@@ -159,7 +160,7 @@
         <member-entity entity-alias="status" entity-name="moqui.basic.StatusItem" join-from-alias="instance">
             <key-map field-name="statusId"/>
         </member-entity>
-        <member-entity entity-alias="actionType" entity-name="moqui.basic.Enumeration" join-from-alias="instance">
+        <member-entity entity-alias="actionType" entity-name="moqui.basic.Enumeration" join-from-alias="instance" join-optional="true">
             <key-map field-name="actionTypeEnumId"/>
         </member-entity>
         <member-entity entity-alias="inputUser" entity-name="moqui.security.UserAccount" join-from-alias="instance" join-optional="true">

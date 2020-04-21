@@ -17,6 +17,7 @@
         <field name="primaryEntityName" type="text-medium"/>
         <field name="primaryViewEntityName" type="text-medium"/>
         <field name="primaryKeyField" type="text-medium"/>
+        <field name="detailTransitionUrl" type="text-medium"/>
         <field name="creationDate" type="date-time" default="ec.user.nowTimestamp"/>
 
         <relationship type="one" related="moqui.basic.StatusType" short-alias="statusType">

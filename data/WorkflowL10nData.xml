@@ -27,6 +27,9 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.basic.LocalizedMessage original="Workflow" locale="zh" localized="工作流管理"/>
     <moqui.basic.LocalizedMessage original="Instances" locale="zh" localized="工作流实例管理"/>
     <moqui.basic.LocalizedMessage original="Find Instance" locale="zh" localized="工作流实例列表"/>
+    <moqui.basic.LocalizedMessage original="Instance created successfully." locale="zh" localized="实例创建成功"/>
+    <moqui.basic.LocalizedMessage original="Instance started successfully." locale="zh" localized="工作启动成功"/>
+
 
     <!-- Workflow activity type -->
     <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_ACTIVITY_ENTER" locale="zh" localized="开始"/>
