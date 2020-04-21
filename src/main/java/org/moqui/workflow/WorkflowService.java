@@ -584,7 +584,8 @@ public class WorkflowService {
 
         // prepare the conditions
         EntityConditionFactory ecf = ef.getConditionFactory();
-        EntityCondition findCondition = ecf.makeCondition("workflowId", EntityCondition.ComparisonOperator.IN, getUserWorkflowIdSet(ec));
+        // Allow other user to modify workflow
+        EntityCondition findCondition = ecf.getTrueCondition(); //ecf.makeCondition("workflowId", EntityCondition.ComparisonOperator.IN, getUserWorkflowIdSet(ec));
 
         // add the filter
         if (StringUtil.isValidElasticsearchQuery(filter)) {
