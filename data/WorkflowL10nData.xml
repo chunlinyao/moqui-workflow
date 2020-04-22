@@ -28,7 +28,10 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.basic.LocalizedMessage original="Instances" locale="zh" localized="工作流实例管理"/>
     <moqui.basic.LocalizedMessage original="Find Instance" locale="zh" localized="工作流实例列表"/>
     <moqui.basic.LocalizedMessage original="Instance created successfully." locale="zh" localized="实例创建成功"/>
-    <moqui.basic.LocalizedMessage original="Instance started successfully." locale="zh" localized="工作启动成功"/>
+    <moqui.basic.LocalizedMessage original="Instance started successfully." locale="zh" localized="工作流启动成功"/>
+    <moqui.basic.LocalizedMessage original="Instance suspended successfully." locale="zh" localized="工作流暂停成功"/>
+    <moqui.basic.LocalizedMessage original="Instance variable updated successfully." locale="zh" localized="工作流变量更新成功"/>
+    <moqui.basic.LocalizedMessage original="Workflow instance task updated successfully." locale="zh" localized="流程任务更新成功"/>
 
 
     <!-- Workflow activity type -->
@@ -46,6 +49,14 @@ along with this software (see the LICENSE.md file). If not, see
     <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_INST_STAT_COMPLETE" locale="zh" localized="已完成"/>
     <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_INST_STAT_ABORT" locale="zh" localized="中止"/>
     <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_INST_STAT_SUSPEND" locale="zh" localized="暂停"/>
+
+    <!-- Workflow instance task status -->
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_TASK_STAT_PEND" locale="zh" localized="待处理"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_TASK_STAT_PROGRESS" locale="zh" localized="处理中"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_TASK_STAT_DONE" locale="zh" localized="已完成"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_TASK_STAT_APPROVE" locale="zh" localized="批准"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_TASK_STAT_REJECT" locale="zh" localized="驳回"/>
+    <moqui.basic.LocalizedEntityField entityName="moqui.basic.StatusItem" fieldName="description" pkValue="WF_TASK_STAT_OBSOLETE" locale="zh" localized="作废"/>
 
     <!-- Workflow event type -->
     <moqui.basic.LocalizedEntityField entityName="moqui.basic.Enumeration" fieldName="description" pkValue="WF_EVENT_START" locale="zh" localized="开始"/>

@@ -11,7 +11,7 @@
     <widgets>
         <form-list name="ListInstances" use-widget="aggrid" list="instanceList">
             <entity-find entity-name="moqui.workflow.WorkflowInstanceDetail" list="instanceList">
-                <search-form-inputs default-order-by="^instanceId"/>
+                <search-form-inputs default-order-by="-instanceId"/>
             </entity-find>
             <field name="instanceId">
                 <header-field title="实例ID">

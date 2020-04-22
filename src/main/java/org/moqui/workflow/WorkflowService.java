@@ -1512,7 +1512,7 @@ public class WorkflowService {
         // log the processing time
         stopWatch.stop();
         logger.debug(String.format("[%s] Instance %s created in %d milliseconds", logId, instanceId, stopWatch.getTime()));
-        mf.addMessage("Instance created successfully.");
+        mf.addMessage(lf.localize("Instance created successfully."));
 
         // return the output parameters
         HashMap<String, Object> outParams = new HashMap<>();
@@ -1941,7 +1941,7 @@ public class WorkflowService {
         // log the processing time
         stopWatch.stop();
         logger.debug(String.format("[%s] Instance %s started in %d milliseconds", logId, instanceId, stopWatch.getTime()));
-        mf.addMessage("Instance started successfully.");
+        mf.addMessage(lf.localize("Instance started successfully."));
 
         // return the output parameters
         HashMap<String, Object> outParams = new HashMap<>();
@@ -2110,7 +2110,7 @@ public class WorkflowService {
         // log the processing time
         stopWatch.stop();
         logger.debug(String.format("[%s] Instance %s suspended in %d milliseconds", logId, instanceId, stopWatch.getTime()));
-        mf.addMessage("Instance suspended successfully.");
+        mf.addMessage(lf.localize("Instance suspended successfully."));
 
         // return the output parameters
         HashMap<String, Object> outParams = new HashMap<>();
@@ -2354,6 +2354,7 @@ public class WorkflowService {
         ContextStack cs = ec.getContext();
         MessageFacade mf = ec.getMessage();
         EntityFacade ef = ec.getEntity();
+        L10nFacade lf = ec.getL10n();
         UserFacade uf = ec.getUser();
         ServiceFacade sf = ec.getService();
 
@@ -2426,7 +2427,7 @@ public class WorkflowService {
         // log the processing time
         stopWatch.stop();
         logger.debug(String.format("[%s] Instance variable %s updated in %d milliseconds", logId, variableId, stopWatch.getTime()));
-        mf.addMessage("Instance variable updated successfully.");
+        mf.addMessage(lf.localize("Instance variable updated successfully."));
 
         // return the output parameters
         HashMap<String, Object> outParams = new HashMap<>();
@@ -2615,6 +2616,7 @@ public class WorkflowService {
         // shortcuts for convenience
         ContextStack cs = ec.getContext();
         MessageFacade mf = ec.getMessage();
+        L10nFacade lf = ec.getL10n();
         EntityFacade ef = ec.getEntity();
         UserFacade uf = ec.getUser();
         ServiceFacade sf = ec.getService();
@@ -2686,7 +2688,7 @@ public class WorkflowService {
         // log the processing time
         stopWatch.stop();
         logger.debug(String.format("[%s] Workflow instance task %s updated in %d milliseconds", logId, taskId, stopWatch.getTime()));
-        mf.addMessage("Workflow instance task updated successfully.");
+        mf.addMessage(lf.localize("Workflow instance task updated successfully."));
 
         // return the output parameters
         HashMap<String, Object> outParams = new HashMap<>();
