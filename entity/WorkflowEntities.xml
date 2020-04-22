@@ -289,7 +289,7 @@
         <relationship type="one" related="moqui.workflow.WorkflowInstance" short-alias="workflowInstance">
             <key-map field-name="instanceId"/>
         </relationship>
-        <relationship type="one" related="moqui.workflow.WorkflowActivity" short-alias="activity">
+        <relationship type="one-nofk" related="moqui.workflow.WorkflowActivity" short-alias="activity">
             <key-map field-name="activityId"/>
         </relationship>
         <relationship type="one-nofk" related="moqui.workflow.WorkflowVariable" short-alias="variable">
