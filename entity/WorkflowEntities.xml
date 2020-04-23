@@ -106,6 +106,7 @@
         <field name="workflowId" type="id"/>
         <field name="variableTypeEnumId" type="id"/>
         <field name="variableName" type="text-medium"/>
+        <field name="displayName" type="text-medium"/>
         <field name="description" type="text-long"/>
         <field name="defaultValue" type="text-long"/>
         <field name="creationDate" type="date-time" default="ec.user.nowTimestamp"/>
