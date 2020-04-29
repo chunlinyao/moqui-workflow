@@ -125,6 +125,7 @@
     <entity entity-name="WorkflowActivity" package="moqui.workflow">
         <field name="activityId" type="id" is-pk="true"/>
         <field name="workflowId" type="id"/>
+        <field name="description" type="text-medium" />
         <field name="activityTypeEnumId" type="id"/>
         <field name="nodeId" type="text-medium"/>
         <field name="nodeData" type="text-very-long"/>

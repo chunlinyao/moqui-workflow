@@ -281,11 +281,15 @@ public class WorkflowService {
                 // get the timeout values
                 int timeoutInterval = 0;
                 String timeoutUomId = null;
+                String activityDescription = null;
                 if (nodeData.has("timeoutInterval")) {
                     timeoutInterval = nodeData.getInt("timeoutInterval");
                 }
                 if (nodeData.has("timeoutUomId")) {
                     timeoutUomId = nodeData.getString("timeoutUomId");
+                }
+                if (nodeData.has("activityDescription")) {
+                    activityDescription = nodeData.getString("activityDescription");
                 }
 
                 // create or update activity
@@ -306,6 +310,7 @@ public class WorkflowService {
                             .parameter("nodeData", nodeData)
                             .parameter("timeoutInterval", timeoutInterval)
                             .parameter("timeoutUomId", timeoutUomId)
+                            .parameter("description", activityDescription)
                             .parameter("updateUserId", uf.getUserId())
                             .call();
                     activityIdSet.remove(activityId);
@@ -318,6 +323,7 @@ public class WorkflowService {
                             .parameter("nodeData", nodeData)
                             .parameter("timeoutInterval", timeoutInterval)
                             .parameter("timeoutUomId", timeoutUomId)
+                            .parameter("description", activityDescription)
                             .call();
                     String activityId = (String) resp.get("activityId");
                     logger.debug(String.format("[%s] Activity %s created for node %s", logId, activityId, nodeId));
