@@ -263,6 +263,7 @@
         <alias name="statusDescription" entity-alias="taskStatus" field="description"/>
         <alias name="activityTypeEnumId" entity-alias="activityType" field="enumId"/>
         <alias name="activityTypeDescription" entity-alias="activityType" field="description"/>
+        <alias name="activityDescription" entity-alias="activity" field="description"/>
     </view-entity>
 
 </entities>
