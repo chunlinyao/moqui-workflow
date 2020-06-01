@@ -103,7 +103,12 @@
         <id name="workflowId">
             <resource name="design">
                 <method type="post">
-                    <service name="org.moqui.workflow.WorkflowServices.design#Workflow"/>
+                    <service name="org.moqui.workflow.WorkflowServices.design#WorkflowHeader"/>
+                </method>
+            </resource>
+            <resource name="publish">
+                <method type="post">
+                    <service name="org.moqui.workflow.WorkflowServices.publish#Workflow"/>
                 </method>
             </resource>
             <resource name="variable">

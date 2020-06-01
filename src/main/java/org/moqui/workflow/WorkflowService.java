@@ -621,7 +621,7 @@ public class WorkflowService {
         // find
         String userId = uf.getUserId();
         ArrayList<Map<String, Object>> workflowList = new ArrayList<>();
-        EntityList workflows = ef.find("moqui.workflow.WorkflowDetail")
+        EntityList workflows = ef.find("moqui.workflow.WorkflowHeaderDetail")
                 .condition(findCondition)
                 .searchFormMap(cs, null, null, null, false)
                 .offset(pageIndex, pageSize)
@@ -633,7 +633,7 @@ public class WorkflowService {
         }
 
         // count
-        long totalRows = ef.find("moqui.workflow.WorkflowDetail")
+        long totalRows = ef.find("moqui.workflow.WorkflowHeaderDetail")
                 .condition(findCondition)
                 .searchFormMap(cs, null, null, null, false)
                 .count();
@@ -709,9 +709,16 @@ public class WorkflowService {
             return new HashMap<>();
         }
 
+        int version = 1;
         // create
-        Map<String, Object> resp = sf.sync().name("create#moqui.workflow.Workflow")
+        Map<String, Object> resp = sf.sync().name("create#moqui.workflow.WorkflowHeader")
+                .call();
+        String workflowHeaderId = (String) resp.get("workflowHeaderId");
+        // create
+        resp = sf.sync().name("create#moqui.workflow.Workflow")
                 .parameter("workflowTypeId", workflowTypeId)
+                .parameter("workflowHeaderId", workflowHeaderId)
+                .parameter("version", version)
                 .parameter("statusFlowId", statusFlowId)
                 .parameter("launchTypeEnumId", launchTypeEnumId)
                 .parameter("workflowName", workflowName)
@@ -727,6 +734,65 @@ public class WorkflowService {
         stopWatch.stop();
         logger.debug(String.format("[%s] Workflow %s created in %d milliseconds", logId, workflowId, stopWatch.getTime()));
         mf.addMessage("Workflow created successfully.");
+
+        // return the output parameters
+        HashMap<String, Object> outParams = new HashMap<>();
+        outParams.put("workflowId", workflowId);
+        return outParams;
+    }
+
+    /**
+     * Publish an existing workflow.
+     *
+     * @param ec Execution context
+     * @return Output parameter map
+     */
+    public Map<String, Object> publishWorkflow(ExecutionContext ec) {
+
+        // start the stop watch
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        // shortcuts for convenience
+        ContextStack cs = ec.getContext();
+        MessageFacade mf = ec.getMessage();
+        L10nFacade lf = ec.getL10n();
+        EntityFacade ef = ec.getEntity();
+        UserFacade uf = ec.getUser();
+        ServiceFacade sf = ec.getService();
+
+        // get the parameters
+        String workflowId = (String) cs.getOrDefault("workflowId", null);
+
+        // generate a new log ID
+        String logId = ContextUtil.getLogId(ec);
+        logger.debug(String.format("[%s] Publishing workflow ...", logId));
+        logger.debug(String.format("[%s] Param workflowId=%s", logId, workflowId));
+
+        // validate the workflow
+        EntityValue workflow = ef.find("moqui.workflow.Workflow")
+                .condition("workflowId", workflowId)
+                .one();
+        if (workflow == null) {
+            stopWatch.stop();
+            mf.addError(lf.localize("WORKFLOW_NOT_FOUND"));
+            logger.error(String.format("[%s] Workflow with ID %s was not found", logId, workflowId));
+            return new HashMap<>();
+        }
+
+        String workflowHeaderId = workflow.getString("workflowHeaderId");
+        Long version = workflow.getLong("version");
+
+        // update
+        sf.sync().name("update#moqui.workflow.WorkflowHeader")
+                .parameter("workflowHeaderId", workflowHeaderId)
+                .parameter("publishedVersion", version)
+                .call();
+
+        // log the processing time
+        stopWatch.stop();
+        logger.debug(String.format("[%s] Workflow %s published in %d milliseconds", logId, workflowId, stopWatch.getTime()));
+        mf.addMessage("Workflow published successfully.");
 
         // return the output parameters
         HashMap<String, Object> outParams = new HashMap<>();
@@ -875,6 +941,161 @@ public class WorkflowService {
         return outParams;
     }
 
+    /**
+     * Create a new Workflow version from an existing workflow.
+     *
+     * @param ec Execution context
+     * @return Output parameter map
+     */
+    public Map<String, Object> createWorkflowVersion(ExecutionContext ec) {
+
+        // start the stop watch
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        // shortcuts for convenience
+        ContextStack cs = ec.getContext();
+        MessageFacade mf = ec.getMessage();
+        L10nFacade lf = ec.getL10n();
+        EntityFacade ef = ec.getEntity();
+        UserFacade uf = ec.getUser();
+        ServiceFacade sf = ec.getService();
+
+        // get the parameters
+        String workflowId = (String) cs.getOrDefault("workflowId", null);
+
+        // generate a new log ID
+        String logId = ContextUtil.getLogId(ec);
+        logger.debug(String.format("[%s] Cloning workflow ...", logId));
+        logger.debug(String.format("[%s] Param workflowId=%s", logId, workflowId));
+
+        // validate the workflow
+        EntityValue workflow = ef.find("moqui.workflow.Workflow")
+                .condition("workflowId", workflowId)
+                .one();
+        if (workflow == null) {
+            stopWatch.stop();
+            mf.addError(lf.localize("WORKFLOW_NOT_FOUND"));
+            logger.error(String.format("[%s] Workflow with ID %s was not found", logId, workflowId));
+            return new HashMap<>();
+        }
+        String workflowHeaderId = (String) workflow.get("workflowHeaderId");
+        EntityValue workflowHeader = ef.find("moqui.workflow.WorkflowHeader")
+                .condition("workflowHeaderId", workflowHeaderId)
+                .forUpdate(true)
+                .one();
+
+        long latestVersion = workflowHeader.getLong("latestVersion");
+        latestVersion ++;
+        workflowHeader.set("latestVersion", latestVersion);
+        workflowHeader.update();
+
+        EntityValue newWorkflow = workflow.cloneValue();
+        newWorkflow.set("version", latestVersion);
+        newWorkflow.set("inputUserId", uf.getUserId());
+        newWorkflow.setSequencedIdPrimary();
+        newWorkflow.create();
+
+        String newWorkflowId = newWorkflow.getString("workflowId");
+
+        EntityList variables = ef.find("moqui.workflow.WorkflowVariable")
+                .condition("workflowId", workflowId)
+                .list();
+
+        variables.forEach(variable -> {
+            EntityValue newVar = variable.cloneValue();
+            newVar.set("workflowId", newWorkflowId);
+            newVar.set("inputUserId", uf.getUserId());
+            newVar.setSequencedIdPrimary();
+            newVar.create();
+        });
+
+        EntityList initiators = ef.find("moqui.workflow.WorkflowInitiator")
+                .condition("workflowId", workflowId)
+                .list();
+
+        initiators.forEach(initiator -> {
+            EntityValue newInitiator = initiator.cloneValue();
+            newInitiator.set("workflowId", newWorkflowId);
+            newInitiator.set("inputUserId", uf.getUserId());
+            newInitiator.setSequencedIdPrimary();
+            newInitiator.create();
+        });
+        // log the processing time
+        stopWatch.stop();
+        logger.debug(String.format("[%s] Workflow %s updated in %d milliseconds", logId, workflowId, stopWatch.getTime()));
+        mf.addMessage("Workflow updated successfully.");
+
+        // return the output parameters
+        HashMap<String, Object> outParams = new HashMap<>();
+        outParams.put("workflowId", newWorkflowId);
+        return outParams;
+    }
+    /**
+     * Designs an existing workflow using Draw2D. If workflow is published, clone a new workflow.
+     *
+     * @param ec Execution context
+     * @return Output parameter map
+     */
+    public Map<String, Object> designWorkflowHeader(ExecutionContext ec) {
+
+        // start the stop watch
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        // shortcuts for convenience
+        ContextStack cs = ec.getContext();
+        MessageFacade mf = ec.getMessage();
+        L10nFacade lf = ec.getL10n();
+        EntityFacade ef = ec.getEntity();
+        UserFacade uf = ec.getUser();
+        ServiceFacade sf = ec.getService();
+
+        // get the parameters
+        String workflowId = (String) cs.getOrDefault("workflowId", null);
+
+        // generate a new log ID
+        String logId = ContextUtil.getLogId(ec);
+        logger.debug(String.format("[%s] Designing workflow header ...", logId));
+        logger.debug(String.format("[%s] Param workflowId=%s", logId, workflowId));
+
+        // validate the workflow
+        EntityValue workflow = ef.find("moqui.workflow.WorkflowDetail")
+                .condition("workflowId", workflowId)
+                .one();
+        if (workflow == null) {
+            stopWatch.stop();
+            mf.addError(lf.localize("WORKFLOW_NOT_FOUND"));
+            logger.error(String.format("[%s] Workflow with ID %s was not found", logId, workflowId));
+            return new HashMap<>();
+        }
+
+        long version = workflow.getLong("version");
+        long latestVersion = workflow.getLong("latestVersion");
+        long publishedVersion = workflow.getLong("publishedVersion");
+
+        if (version != latestVersion || version == publishedVersion) {
+            //cloneWorkflow
+
+            Map<String, Object> resp = sf.sync().name("org.moqui.workflow.WorkflowServices.create#WorkflowVersion")
+                    .parameter("workflowId", workflowId)
+                    .call();
+            String newWorkflowId = (String) resp.get("workflowId");
+            cs.putAll(resp);
+            logger.debug(String.format("[%s] Workflow with ID %s was cloned from %s", logId, newWorkflowId, workflowId));
+        }
+        designWorkflow(ec);
+
+        // log the processing time
+        stopWatch.stop();
+        logger.debug(String.format("[%s] Workflow %s designed in %d milliseconds", logId, workflowId, stopWatch.getTime()));
+        mf.addMessage("Workflow designed successfully.");
+
+        // return the output parameters
+        HashMap<String, Object> outParams = new HashMap<>();
+        outParams.put("workflowId", workflowId);
+        return outParams;
+    }
     /**
      * Designs an existing workflow using Draw2D.
      *
@@ -1423,6 +1644,7 @@ public class WorkflowService {
         ServiceFacade sf = ec.getService();
 
         // get the parameters
+        String workflowHeaderId = (String) cs.getOrDefault("workflowHeaderId", null);
         String workflowId = (String) cs.getOrDefault("workflowId", null);
         String primaryKeyValue = (String) cs.getOrDefault("primaryKeyValue", null);
         String actionTypeEnumId = (String) cs.getOrDefault("actionTypeEnumId", null);
@@ -1430,6 +1652,7 @@ public class WorkflowService {
         // generate a new log ID
         String logId = ContextUtil.getLogId(ec);
         logger.debug(String.format("[%s] Creating workflow instance ...", logId));
+        logger.debug(String.format("[%s] Param workflowHeaderId=%s", logId, workflowHeaderId));
         logger.debug(String.format("[%s] Param workflowId=%s", logId, workflowId));
         logger.debug(String.format("[%s] Param primaryKeyValue=%s", logId, primaryKeyValue));
         logger.debug(String.format("[%s] Param actionTypeEnumId=%s", logId, actionTypeEnumId));
@@ -1441,11 +1664,17 @@ public class WorkflowService {
             logger.error(String.format("[%s] Primary key value is blank", logId));
             return new HashMap<>();
         }
-
-        // validate the workflow
-        EntityValue workflow = ef.find("moqui.workflow.WorkflowDetail")
-                .condition("workflowId", workflowId)
-                .one();
+        EntityValue workflow;
+        if (!StringUtils.isBlank(workflowHeaderId)) {
+            workflow = ef.find("moqui.workflow.WorkflowHeaderDetail")
+                    .condition("workflowHeaderId", workflowHeaderId)
+                    .one();
+        } else {
+            // validate the workflow
+            workflow = ef.find("moqui.workflow.WorkflowDetail")
+                    .condition("workflowId", workflowId)
+                    .one();
+        }
         if (workflow == null) {
             stopWatch.stop();
             mf.addError(lf.localize("WORKFLOW_NOT_FOUND"));
@@ -1457,6 +1686,9 @@ public class WorkflowService {
             logger.error(String.format("[%s] Workflow is disabled", logId));
             return new HashMap<>();
         }
+
+        workflowId = workflow.getString("workflowId");
+        workflowHeaderId = workflow.getString("workflowHeaderId");
 
         // make sure the entity exists
         String primaryEntityName = workflow.getString("primaryEntityName");
@@ -1473,7 +1705,7 @@ public class WorkflowService {
 
         // make sure no instance is already running
         long instanceCount = ef.find("moqui.workflow.WorkflowInstance")
-                .condition("workflowId", workflowId)
+                .condition("workflowHeaderId", workflowHeaderId)
                 .condition("primaryKeyValue", primaryKeyValue)
                 .condition(ecf.makeCondition(
                         Arrays.asList(
@@ -1483,7 +1715,6 @@ public class WorkflowService {
                         ),
                         EntityCondition.JoinOperator.OR
                 ))
-                .condition("statusId", "N")
                 .count();
         if (instanceCount > 0) {
             stopWatch.stop();
@@ -1497,6 +1728,7 @@ public class WorkflowService {
         logger.debug(String.format("[%s] Workflow %s (%s) will be instantiated", logId, workflowId, workflowName));
         Map<String, Object> resp = sf.sync().name("create#moqui.workflow.WorkflowInstance")
                 .parameter("workflowId", workflowId)
+                .parameter("workflowHeaderId", workflowHeaderId)
                 .parameter("primaryKeyValue", primaryKeyValue)
                 .parameter("actionTypeEnumId", actionTypeEnumId)
                 .parameter("statusId", WorkflowInstanceStatus.WF_INST_STAT_PEND)

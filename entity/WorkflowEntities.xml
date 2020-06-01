@@ -24,8 +24,34 @@
             <key-map field-name="statusTypeId"/>
         </relationship>
     </entity>
+    <entity entity-name="WorkflowHeader" package="moqui.workflow">
+        <field name="workflowHeaderId" type="id" is-pk="true" />
+        <field name="publishedVersion" type="number-integer" default="0" />
+        <field name="latestVersion" type="number-integer" default="1"/>
+
+        <relationship type="many" related="moqui.workflow.Workflow" short-alias="workflows">
+            <key-map field-name="workflowHeaderId" related="workflowHeaderId" />
+        </relationship>
+        <relationship type="one-nofk" related="moqui.workflow.Workflow" short-alias="currentWorkflow">
+            <key-map field-name="workflowHeaderId" related="workflowHeaderId" />
+            <key-map field-name="publishedVersion" related="version" />
+        </relationship>
+        <relationship type="one-nofk" related="moqui.workflow.Workflow" short-alias="latestWorkflow">
+            <key-map field-name="workflowHeaderId" related="workflowHeaderId" />
+            <key-map field-name="latestVersion" related="version" />
+        </relationship>
+
+        <master>
+            <detail relationship="workflows" />
+            <detail relationship="currentWorkflow" />
+            <detail relationship="latestWorkflow" />
+        </master>
+    </entity>
+
     <entity entity-name="Workflow" package="moqui.workflow">
         <field name="workflowId" type="id" is-pk="true"/>
+        <field name="workflowHeaderId" type="id" />
+        <field name="version" type="number-integer" />
         <field name="workflowTypeId" type="id"/>
         <field name="statusFlowId" type="id"/>
         <field name="launchTypeEnumId" type="id"/>
@@ -70,7 +96,14 @@
         <relationship type="many" related="moqui.workflow.WorkflowInstance" short-alias="instances">
             <key-map field-name="workflowId"/>
         </relationship>
+        <relationship type="one" related="moqui.workflow.WorkflowHeader" short-alias="header">
+            <key-map field-name="workflowHeaderId" />
+        </relationship>
 
+        <index name="UIDX_WFH_VER" unique="true">
+            <index-field name="workflowHeaderId"/>
+            <index-field name="version"/>
+        </index>
         <master>
             <detail relationship="initiators"/>
             <detail relationship="activities"/>
@@ -204,6 +237,7 @@
     <entity entity-name="WorkflowInstance" package="moqui.workflow">
         <field name="instanceId" type="id" is-pk="true"/>
         <field name="workflowId" type="id"/>
+        <field name="workflowHeaderId" type="id"/>
         <field name="statusId" type="id"/>
         <field name="primaryKeyValue" type="id"/>
         <field name="actionTypeEnumId" type="id"/>
@@ -220,6 +254,9 @@
 
         <relationship type="one" related="moqui.workflow.Workflow" short-alias="workflow">
             <key-map field-name="workflowId"/>
+        </relationship>
+        <relationship type="one" related="moqui.workflow.WorkflowHeader" short-alias="workflowHeader">
+            <key-map field-name="workflowHeaderId"/>
         </relationship>
         <relationship type="one" title="WorkflowInstanceStatus" related="moqui.basic.StatusItem" short-alias="status">
             <key-map field-name="statusId"/>

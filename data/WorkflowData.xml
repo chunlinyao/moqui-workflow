@@ -122,6 +122,17 @@
     <moqui.basic.StatusFlowTransition statusFlowId="WorkflowInstanceStatusFlow" statusId="WF_INST_STAT_SUSPEND" toStatusId="WF_INST_STAT_ACTIVE" transitionSequence="1" transitionName="Resume"/>
 
     <!-- Data documents -->
+    <dataDocuments dataDocumentId="MoquiWorkflowHeader" documentName="WorkflowHeader" documentTitle="${workflowName}" indexName="workflow" primaryEntityName="moqui.workflow.WorkflowHeader">
+        <fields fieldSeqId="01" fieldPath="workflowHeaderId"/>
+        <fields fieldSeqId="02" fieldPath="latestWorkflow:workflowId"/>
+        <fields fieldSeqId="03" fieldPath="latestWorkflow:workflowName"/>
+        <fields fieldSeqId="04" fieldPath="latestWorkflow:workflowTypeId"/>
+        <fields fieldSeqId="05" fieldPath="latestWorkflow:description"/>
+        <fields fieldSeqId="06" fieldPath="latestWorkflow:creationDate"/>
+        <fields fieldSeqId="07" fieldPath="latestWorkflow:workflowType:typeName" fieldNameAlias="workflowTypeName"/>
+
+        <feeds dataFeedId="WorkflowSearch"/>
+    </dataDocuments>
     <dataDocuments dataDocumentId="MoquiWorkflow" documentName="Workflow" documentTitle="${workflowName}" indexName="workflow" primaryEntityName="moqui.workflow.Workflow">
         <fields fieldSeqId="01" fieldPath="workflowId"/>
         <fields fieldSeqId="02" fieldPath="workflowName"/>

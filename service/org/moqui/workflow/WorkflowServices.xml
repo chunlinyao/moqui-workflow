@@ -54,6 +54,14 @@
             <parameter name="workflowId"/>
         </out-parameters>
     </service>
+    <service verb="publish" noun="Workflow" type="java" location="org.moqui.workflow.WorkflowService" method="publishWorkflow">
+        <in-parameters>
+            <parameter name="workflowId" required="true"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="workflowId"/>
+        </out-parameters>
+    </service>
     <service verb="update" noun="Workflow" type="java" location="org.moqui.workflow.WorkflowService" method="updateWorkflow">
         <in-parameters>
             <parameter name="workflowId"/>
@@ -68,7 +76,27 @@
             <parameter name="workflowId"/>
         </out-parameters>
     </service>
+    <service verb="create" noun="WorkflowVersion" type="java" location="org.moqui.workflow.WorkflowService" method="createWorkflowVersion">
+        <in-parameters>
+            <parameter name="workflowId"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="workflowId"/>
+        </out-parameters>
+    </service>
     <service verb="design" noun="Workflow" type="java" location="org.moqui.workflow.WorkflowService" method="designWorkflow">
+        <in-parameters>
+            <parameter name="workflowId"/>
+            <parameter name="modelData"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="workflowId"/>
+        </out-parameters>
+    </service>
+    <service verb="design" noun="WorkflowHeader" type="java" location="org.moqui.workflow.WorkflowService" method="designWorkflowHeader">
+        <description>
+            Only design latestWorkflow of workflow header. If latest is published, clone a new Workflow.
+        </description>
         <in-parameters>
             <parameter name="workflowId"/>
             <parameter name="modelData"/>
@@ -153,6 +181,7 @@
     <!-- Workflow instance -->
     <service verb="create" noun="WorkflowInstance" type="java" location="org.moqui.workflow.WorkflowService" method="createWorkflowInstance">
         <in-parameters>
+            <parameter name="workflowHeaderId"/>
             <parameter name="workflowId"/>
             <parameter name="primaryKeyValue"/>
             <parameter name="actionTypeEnumId"/>
