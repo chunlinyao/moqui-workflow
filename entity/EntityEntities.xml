@@ -13,6 +13,7 @@
         <field name="fieldName" type="text-medium"/>
         <field name="fieldTypeEnumId" type="id"/>
         <field name="displayName" type="text-medium"/>
+        <field name="enumGroupId" type="id"/>
         <field name="creationDate" type="date-time" default="ec.user.nowTimestamp"/>
 
         <relationship type="one" title="EntityFieldType" related="moqui.basic.Enumeration" short-alias="fieldType">
