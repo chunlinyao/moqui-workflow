@@ -30,6 +30,7 @@
 
         <alias-all entity-alias="workflow"/>
         <alias-all entity-alias="workflowHeader"/>
+        <alias name="updateServiceName" entity-alias="workflowType" field="updateServiceName"/>
         <alias name="workflowTypeName" entity-alias="workflowType" field="typeName"/>
         <alias name="primaryEntityName" entity-alias="workflowType" field="primaryEntityName"/>
         <alias name="primaryViewEntityName" entity-alias="workflowType" field="primaryViewEntityName"/>
@@ -69,6 +70,7 @@
 
         <alias-all entity-alias="workflow"/>
         <alias-all entity-alias="workflowHeader"/>
+        <alias name="updateServiceName" entity-alias="workflowType" field="updateServiceName"/>
         <alias name="workflowTypeName" entity-alias="workflowType" field="typeName"/>
         <alias name="primaryEntityName" entity-alias="workflowType" field="primaryEntityName"/>
         <alias name="primaryViewEntityName" entity-alias="workflowType" field="primaryViewEntityName"/>

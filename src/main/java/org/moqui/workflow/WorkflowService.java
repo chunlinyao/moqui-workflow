@@ -987,9 +987,17 @@ public class WorkflowService {
 
         long latestVersion = workflowHeader.getLong("latestVersion");
         latestVersion ++;
+        EntityList existVersions =
+                ef.find("moqui.workflow.Workflow")
+                .condition("workflowHeaderId", workflowHeaderId)
+                .selectField("version")
+                .list();
+        long maxVersion = existVersions.stream().map(v -> v.getLong("version")).max(Comparator.naturalOrder()).orElse((long) 0);
+        if (latestVersion < maxVersion) {
+            latestVersion = maxVersion + 1;
+        }
         workflowHeader.set("latestVersion", latestVersion);
         workflowHeader.update();
-
         EntityValue newWorkflow = workflow.cloneValue();
         newWorkflow.set("version", latestVersion);
         newWorkflow.set("inputUserId", uf.getUserId());
@@ -2014,6 +2022,11 @@ public class WorkflowService {
                             }
 
                             // count approvals
+                            long allCounts = ef.find("moqui.workflow.WorkflowInstanceTask")
+                                    .condition("instanceId", instanceId)
+                                    .condition("activityId", currentActivityId)
+                                    .condition("assignedUserId", EntityCondition.ComparisonOperator.IN, userIdSet)
+                                    .count();
                             long approvals = ef.find("moqui.workflow.WorkflowInstanceTask")
                                     .condition("instanceId", instanceId)
                                     .condition("activityId", currentActivityId)
@@ -2031,7 +2044,7 @@ public class WorkflowService {
                             if (rejections >= minRejections) {
                                 outgoingPortType = WorkflowPortType.WF_PORT_FAILURE;
                                 break;
-                            } else if (approvals >= minApprovals) {
+                            } else if (approvals >= minApprovals || approvals >= allCounts) {
                                 outgoingPortType = WorkflowPortType.WF_PORT_SUCCESS;
                                 if(joinOperator == EntityCondition.JoinOperator.OR) {
                                     break;
