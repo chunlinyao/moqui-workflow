@@ -993,7 +993,7 @@ public class WorkflowService {
                 .selectField("version")
                 .list();
         long maxVersion = existVersions.stream().map(v -> v.getLong("version")).max(Comparator.naturalOrder()).orElse((long) 0);
-        if (latestVersion < maxVersion) {
+        if (latestVersion <= maxVersion) {
             latestVersion = maxVersion + 1;
         }
         workflowHeader.set("latestVersion", latestVersion);
