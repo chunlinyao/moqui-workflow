@@ -72,6 +72,7 @@ public class WorkflowUserActivity extends AbstractWorkflowActivity {
         String description = nodeData.has("description") ? nodeData.getString("description") : null;
         int timeoutInterval = nodeData.has("timeoutInterval") ? nodeData.getInt("timeoutInterval") : 0;
         String timeoutUomId = nodeData.has("timeoutUomId") ? nodeData.getString("timeoutUomId") : null;
+        boolean autoStart = nodeData.has("autoStart") ? nodeData.getBoolean("autoStart") : false;
 
         // get the user accounts
         ArrayList<EntityValue> userAccounts = new ArrayList<>();
@@ -147,7 +148,7 @@ public class WorkflowUserActivity extends AbstractWorkflowActivity {
                     .parameter("assignedUserId", userId)
                     .parameter("taskTypeEnumId", taskType)
                     .parameter("variableId", variableId)
-                    .parameter("statusId", WorkflowTaskStatus.WF_TASK_STAT_PEND)
+                    .parameter("statusId", autoStart ? WorkflowTaskStatus.WF_TASK_STAT_PROGRESS: WorkflowTaskStatus.WF_TASK_STAT_PEND)
                     .parameter("summary", summary)
                     .parameter("description", description)
                     .call();
