@@ -18,4 +18,6 @@
         <feeds dataFeedId="WorkflowSearch"/>
     </dataDocuments>
 
+    <moqui.security.UserPermission userPermissionId="WorkflowRelocate" description="Relocate workflow instance to any task."/>
+    <moqui.security.UserGroupPermission userGroupId="ADMIN" userPermissionId="WorkflowRelocate" fromDate="0"/>
 </entity-facade-xml>

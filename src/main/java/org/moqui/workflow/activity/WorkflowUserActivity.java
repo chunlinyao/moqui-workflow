@@ -142,6 +142,14 @@ public class WorkflowUserActivity extends AbstractWorkflowActivity {
         // create tasks
         for(EntityValue userAccount : userAccounts) {
             String userId = userAccount.getString("userId");
+            // if loop to the same activity delete old approve information.
+            EntityList existList = ef.find("moqui.workflow.WorkflowInstanceTask")
+                    .condition("instanceId", instanceId)
+                    .condition("activityId", activityId)
+                    .condition("assignedUserId", userId).forUpdate(true).list();
+            for (EntityValue ev: existList) {
+                ev.delete();
+            }
             Map<String, Object> resp = sf.sync().name("create#moqui.workflow.WorkflowInstanceTask")
                     .parameter("instanceId", instanceId)
                     .parameter("activityId", activityId)

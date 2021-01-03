@@ -1767,6 +1767,83 @@ public class WorkflowService {
     }
 
     /**
+     * Relocate a workflow instance to specified activity.
+     * @param ec
+     * @return
+     */
+    public Map<String, Object> relocateToWorkflowInstanceTask(ExecutionContext ec) {
+
+        // start the stop watch
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        // shortcuts for convenience
+        ContextStack cs = ec.getContext();
+        MessageFacade mf = ec.getMessage();
+        L10nFacade lf = ec.getL10n();
+        EntityFacade ef = ec.getEntity();
+        UserFacade uf = ec.getUser();
+        ServiceFacade sf = ec.getService();
+
+        // get the parameters
+        String taskId = (String) cs.getOrDefault("taskId", null);
+
+        // generate a new log ID
+        String logId = ContextUtil.getLogId(ec);
+        logger.debug(String.format("[%s] Relocate workflow instance to task ...", logId));
+        logger.debug(String.format("[%s] Param taskId=%s", logId, taskId));
+
+        // validate the parameters
+        if (StringUtils.isBlank(taskId)) {
+            stopWatch.stop();
+            mf.addError("Task ID is required.");
+            logger.error(String.format("[%s] Task ID is blank", logId));
+            return new HashMap<>();
+        }
+
+        // get the task
+        EntityValue task = ef.find("moqui.workflow.WorkflowInstanceTask")
+                .condition("taskId", taskId)
+                .one();
+
+        // validate the task
+        if (task == null) {
+            stopWatch.stop();
+            mf.addError("Task not found.");
+            logger.error(String.format("[%s] Task with ID %s was not found", logId, taskId));
+            return new HashMap<>();
+        } else if (!task.getString("assignedUserId").equals(uf.getUserId()) && !uf.hasPermission("WorkflowRelocate")) {
+            stopWatch.stop();
+            mf.addError("Access to task denied.");
+            logger.error(String.format("[%s] Access to task denied", logId));
+            return new HashMap<>();
+        }
+
+        // update task
+        sf.sync().name("update#moqui.workflow.WorkflowInstance")
+                .parameter("instanceId", task.getString("instanceId"))
+                .parameter("activityId", task.getString("activityId"))
+                .parameter("activityExecuted", "N")
+                .parameter("lastUpdateDate", TimestampUtil.now())
+                .call();
+
+        // start instance
+        sf.sync().name("moqui.workflow.WorkflowServices.start#WorkflowInstance")
+                .parameter("instanceId", task.getString("instanceId"))
+                .disableAuthz()
+                .call();
+
+        // log the processing time
+        stopWatch.stop();
+        logger.debug(String.format("[%s] Workflow instance task %s relocated in %d milliseconds", logId, taskId, stopWatch.getTime()));
+        mf.addMessage(lf.localize("Workflow instance task relocated successfully."));
+
+        // return the output parameters
+        HashMap<String, Object> outParams = new HashMap<>();
+        outParams.put("taskId", taskId);
+        return outParams;
+    }
+    /**
      * Starts a workflow instance.
      *
      * @param ec Execution context

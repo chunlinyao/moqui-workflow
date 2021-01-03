@@ -272,4 +272,12 @@
         </out-parameters>
     </service>
 
+    <service verb="relocateTo" noun="WorkflowInstanceTask" type="java" location="org.moqui.workflow.WorkflowService" method="relocateToWorkflowInstanceTask">
+        <in-parameters>
+            <parameter name="taskId" required="true"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="taskId"/>
+        </out-parameters>
+    </service>
 </services>
