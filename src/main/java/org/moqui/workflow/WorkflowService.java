@@ -1674,7 +1674,7 @@ public class WorkflowService {
         }
         EntityValue workflow;
         if (!StringUtils.isBlank(workflowHeaderId)) {
-            workflow = ef.find("moqui.workflow.WorkflowHeaderDetail")
+            workflow = ef.find("moqui.workflow.WorkflowHeaderPublishedDetail")
                     .condition("workflowHeaderId", workflowHeaderId)
                     .one();
         } else {

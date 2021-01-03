@@ -2,6 +2,46 @@
 <entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/entity-definition-2.1.xsd">
 
+    <view-entity entity-name="WorkflowHeaderPublishedDetail" package="moqui.workflow">
+        <member-entity entity-alias="workflowHeader" entity-name="moqui.workflow.WorkflowHeader"/>
+        <member-entity entity-alias="workflow" entity-name="moqui.workflow.Workflow" join-from-alias="workflowHeader">
+            <key-map field-name="workflowHeaderId" />
+            <key-map field-name="publishedVersion" related="version" />
+        </member-entity>
+        <member-entity entity-alias="workflowType" entity-name="moqui.workflow.WorkflowType" join-from-alias="workflow">
+            <key-map field-name="workflowTypeId"/>
+        </member-entity>
+        <member-entity entity-alias="statusFlow" entity-name="moqui.basic.StatusFlow" join-from-alias="workflow">
+            <key-map field-name="statusFlowId"/>
+        </member-entity>
+        <member-entity entity-alias="launchType" entity-name="moqui.basic.Enumeration" join-from-alias="workflow">
+            <key-map field-name="launchTypeEnumId"/>
+        </member-entity>
+        <member-entity entity-alias="reminderUom" entity-name="moqui.basic.Uom" join-from-alias="workflow">
+            <key-map field-name="reminderIntervalUomId"/>
+        </member-entity>
+        <member-entity entity-alias="inputUser" entity-name="moqui.security.UserAccount" join-from-alias="workflow" join-optional="true">
+            <key-map field-name="inputUserId"/>
+        </member-entity>
+        <member-entity entity-alias="updateUser" entity-name="moqui.security.UserAccount" join-from-alias="workflow" join-optional="true">
+            <key-map field-name="updateUserId"/>
+        </member-entity>
+
+        <alias-all entity-alias="workflow"/>
+        <alias-all entity-alias="workflowHeader"/>
+        <alias name="updateServiceName" entity-alias="workflowType" field="updateServiceName"/>
+        <alias name="workflowTypeName" entity-alias="workflowType" field="typeName"/>
+        <alias name="primaryEntityName" entity-alias="workflowType" field="primaryEntityName"/>
+        <alias name="primaryViewEntityName" entity-alias="workflowType" field="primaryViewEntityName"/>
+        <alias name="primaryKeyField" entity-alias="workflowType" field="primaryKeyField"/>
+        <alias name="detailTransitionUrl" entity-alias="workflowType" field="detailTransitionUrl"/>
+        <alias name="statusFlowId" entity-alias="statusFlow" field="statusFlowId"/>
+        <alias name="statusFlowDescription" entity-alias="statusFlow" field="description"/>
+        <alias name="launchTypeDescription" entity-alias="launchType" field="description"/>
+        <alias name="reminderIntervalDescription" entity-alias="reminderUom" field="description"/>
+        <alias name="inputUserFullName" entity-alias="inputUser" field="userFullName"/>
+        <alias name="updateUserFullName" entity-alias="updateUser" field="userFullName"/>
+    </view-entity>
     <!-- WorkflowHeader -->
     <view-entity entity-name="WorkflowHeaderDetail" package="moqui.workflow">
         <member-entity entity-alias="workflowHeader" entity-name="moqui.workflow.WorkflowHeader"/>
