@@ -1828,7 +1828,7 @@ public class WorkflowService {
                 .call();
 
         // start instance
-        sf.sync().name("moqui.workflow.WorkflowServices.start#WorkflowInstance")
+        sf.sync().name("org.moqui.workflow.WorkflowServices.start#WorkflowInstance")
                 .parameter("instanceId", task.getString("instanceId"))
                 .disableAuthz()
                 .call();
@@ -2320,7 +2320,7 @@ public class WorkflowService {
                 ))
                 .list();
         for (EntityValue instance : instances) {
-            sf.sync().name("moqui.workflow.WorkflowServices.start#WorkflowInstance")
+            sf.sync().name("org.moqui.workflow.WorkflowServices.start#WorkflowInstance")
                     .parameter("instanceId", instance.getString("instanceId"))
                     .requireNewTransaction(true)
                     .ignorePreviousError(true)
