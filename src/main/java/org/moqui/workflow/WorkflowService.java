@@ -1782,6 +1782,7 @@ public class WorkflowService {
         MessageFacade mf = ec.getMessage();
         L10nFacade lf = ec.getL10n();
         EntityFacade ef = ec.getEntity();
+        EntityConditionFactory ecf = ef.getConditionFactory();
         UserFacade uf = ec.getUser();
         ServiceFacade sf = ec.getService();
 
@@ -1818,18 +1819,33 @@ public class WorkflowService {
             logger.error(String.format("[%s] Access to task denied", logId));
             return new HashMap<>();
         }
+        String instanceId = task.getString("instanceId");
+        String toActivityId = task.getString("activityId");
 
+        EntityValue instance = ef.find("moqui.workflow.WorkflowInstance")
+                .condition("instanceId", instanceId)
+                .forUpdate(true).one();
+
+        //Delete all tasks after this task.
+        EntityList tasks = ef.find("moqui.workflow.WorkflowInstanceTask")
+                .condition("instanceId", instanceId)
+                .condition("activityId", EntityCondition.ComparisonOperator.NOT_EQUAL, toActivityId)
+                .condition("creationDate", EntityCondition.ComparisonOperator.GREATER_THAN_EQUAL_TO, task.getTimestamp("creationDate"))
+                .list();
+        for (EntityValue curTask : tasks) {
+            curTask.delete();
+        }
         // update task
         sf.sync().name("update#moqui.workflow.WorkflowInstance")
-                .parameter("instanceId", task.getString("instanceId"))
-                .parameter("activityId", task.getString("activityId"))
+                .parameter("instanceId", instanceId)
+                .parameter("activityId", toActivityId)
                 .parameter("activityExecuted", "N")
                 .parameter("lastUpdateDate", TimestampUtil.now())
                 .call();
 
         // start instance
         sf.sync().name("org.moqui.workflow.WorkflowServices.start#WorkflowInstance")
-                .parameter("instanceId", task.getString("instanceId"))
+                .parameter("instanceId", instanceId)
                 .disableAuthz()
                 .call();
 
@@ -1838,6 +1854,22 @@ public class WorkflowService {
         logger.debug(String.format("[%s] Workflow instance task %s relocated in %d milliseconds", logId, taskId, stopWatch.getTime()));
         mf.addMessage(lf.localize("Workflow instance task relocated successfully."));
 
+        EntityValue newTask = ef.find("moqui.workflow.WorkflowInstanceTask")
+                .condition("instanceId", instanceId)
+                .condition("activityId", toActivityId)
+                .condition("assignedUserId", task.getString("assignedUserId")).one();
+
+        if (newTask != null) {
+            taskId = newTask.getString("taskId");
+        } else {
+            EntityList currentTaskList = ef.find("moqui.workflow.WorkflowInstanceTask")
+                    .condition("instanceId", instanceId)
+                    .condition("activityId", toActivityId)
+                    .list();
+            if (currentTaskList.size() > 0) {
+                taskId = currentTaskList.getFirst().getString("taskId");
+            }
+        }
         // return the output parameters
         HashMap<String, Object> outParams = new HashMap<>();
         outParams.put("taskId", taskId);
